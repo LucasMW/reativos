@@ -10,11 +10,17 @@
 // Downloaded from: https://123d.circuits.io/circuits/1739467-tarefa2
 
 
-void setup() {
+
+unsigned long old;
+int ledState = HIGH;
+void setup() 
+{
   // initialize digital pin 13 as an output.
   pinMode(13, OUTPUT);
+  old = millis();
+  digitalWrite(13,ledState);
 }
-int time = 1000;
+int time = 100;
 void increaseSpeed()
 {
   if(time == 0)
@@ -31,32 +37,39 @@ void decreaseSpeed()
 }
 void stop()
 {
-  while(1);
+  exit(0);
 }
 
 // the loop function runs over and over again forever
-void loop() {
-  digitalWrite(13, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(time);              // wait for a second
-  digitalWrite(13, LOW);    // turn the LED off by making the voltage LOW
-  delay(time); 
+void loop() 
+{
+  unsigned long now = millis();
   
+  if(now >= old + time) // time has passed
+  {
+    old=now;
+    ledState = !ledState;
+    digitalWrite(13, ledState); 
+  }
+    
   int but = digitalRead(11); 
   int but2 = digitalRead(12);
   
-  if(but == 0 && but2 == 0)
+  if(but == 0 && but2 == 0 && now >= old + 500)
   {
     stop();
   }
-  
-  if(but2 == 0)
+  else
   {
-    decreaseSpeed();
-  }
-  
-  // 0 = pushed ; 1 = unpushed
-  if (but == 0) 
-  {
-    increaseSpeed();
+    if(but2 == 0)
+    {
+      decreaseSpeed();
+    }
+    
+    // 0 = pushed ; 1 = unpushed
+    if (but == 0) 
+    {
+      increaseSpeed();
+    }
   }
 }
